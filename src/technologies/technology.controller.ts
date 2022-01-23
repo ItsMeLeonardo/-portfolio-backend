@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -41,5 +42,10 @@ export class TechnologyController {
   @Put(':id')
   update(@Param('id') id: string) {
     return null;
+  }
+
+  @Delete(':id')
+  delete(@Param('id') id: string) {
+    return this.technologyService.delete(id);
   }
 }

@@ -40,7 +40,17 @@ export class TechnologyService {
     return groupedByExpertise;
   }
 
-  async remove() {
-    return true;
+  async delete(id: string) {
+    const tech = await this.techModel.findById(id);
+    if (!tech) {
+      throw new BadRequestException('Technology not found');
+    }
+
+    const result = await this.techModel.deleteOne({ _id: id }).catch((err) => {
+      throw new BadRequestException(err);
+    });
+
+    this.cloudStorage.deleteMedia(tech.icon.name);
+    return result;
   }
 }
