@@ -5,13 +5,18 @@ import {
 } from 'cloudinary';
 import { Injectable } from '@nestjs/common';
 
+export type mediaType = {
+  url: string;
+  name: string;
+};
+
 @Injectable()
 export class CloudStorageService {
   private uploadStream(
     buffer: Buffer,
   ): Promise<UploadApiResponse | UploadApiErrorResponse> {
     return new Promise((resolve, reject) => {
-      const config = { folder: 'project-test' };
+      const config = { folder: process.env.CLOUDINARY_FOLDER };
       const cloudinaryDone = (error, result) => {
         return error ? reject(error) : resolve(result);
       };
@@ -28,9 +33,9 @@ export class CloudStorageService {
   /**
    * @description this method is used to upload an image to cloudinary
    * @param file
-   * @returns {Promise<[string, string]>} an array with any of these combinations `[url, null]` or `[null, error]`
+   * @returns {Promise<[mediaType, string]>} an array with any of these combinations `[{data}, null]` or `[null, error]`
    */
-  async uploadImage(file: Express.Multer.File): Promise<[string, string]> {
+  async uploadImage(file: Express.Multer.File): Promise<[mediaType, string]> {
     try {
       const {
         public_id: name,
@@ -38,7 +43,7 @@ export class CloudStorageService {
         format,
       } = await this.uploadStream(file.buffer).catch();
       const url = this.createUrl({ name, version, format });
-      return [url, null];
+      return [{ url, name }, null];
     } catch (err) {
       return [null, err.message];
     }
