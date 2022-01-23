@@ -13,7 +13,7 @@ export class ProjectsService {
     private cloudStorage: CloudStorageService,
   ) {}
 
-  async uploadMedia(file: Express.Multer.File): Promise<mediaType> {
+  private async uploadMedia(file: Express.Multer.File): Promise<mediaType> {
     const [mediaData, error] = await this.cloudStorage.uploadImage(file);
     if (error) {
       throw new BadRequestException(error);
@@ -21,10 +21,23 @@ export class ProjectsService {
     return mediaData;
   }
 
-  async uploadMultipleMedia(
+  private async uploadMultipleMedia(
     files: Express.Multer.File[],
   ): Promise<mediaType[]> {
     const promises = files.map((file) => this.uploadMedia(file));
+    return await Promise.all(promises);
+  }
+
+  private async deleteMedia(media: mediaType) {
+    const [result, error] = await this.cloudStorage.deleteMedia(media.name);
+    if (error) {
+      throw new BadRequestException(error);
+    }
+    return result;
+  }
+
+  private async deleteMultipleMedia(medias: mediaType[]) {
+    const promises = medias.map((media) => this.deleteMedia(media));
     return await Promise.all(promises);
   }
 
@@ -57,5 +70,24 @@ export class ProjectsService {
 
   async getProjects(): Promise<ProjectDocument[]> {
     return await this.projectModel.find().exec();
+  }
+
+  async deleteProject(id: string) {
+    const project = await this.projectModel.findById(id);
+    if (!project) {
+      throw new BadRequestException('Project not found');
+    }
+
+    const result = await this.projectModel
+      .deleteOne({ _id: id })
+      .catch((err) => {
+        throw new BadRequestException(err);
+      });
+
+    await this.deleteMedia(project.demo);
+    await this.deleteMedia(project.poster);
+    await this.deleteMultipleMedia(project.screens);
+
+    return result;
   }
 }

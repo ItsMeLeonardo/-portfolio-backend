@@ -1,7 +1,9 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  Param,
   Post,
   UploadedFiles,
   UseInterceptors,
@@ -31,5 +33,10 @@ export class ProjectsController {
   @Get()
   async findAll(): Promise<Project[]> {
     return this.projectsService.getProjects();
+  }
+
+  @Delete(':id')
+  async delete(@Param('id') id: string): Promise<any> {
+    return this.projectsService.deleteProject(id);
   }
 }
