@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import { CloudStorageService } from '../cloudStorage/cloudstorage.service';
 import type { mediaType } from '../cloudStorage/cloudstorage.service';
 import { Project, ProjectDocument } from './schemas/project.schema';
+import { groupBy } from '../utils/groupBy';
 
 @Injectable()
 export class ProjectsService {
@@ -44,20 +45,12 @@ export class ProjectsService {
   async createProject(
     project: Project,
     files: Express.Multer.File[],
-  ): Promise<Project> {
-    const demoFile = files.find(
-      (file: Express.Multer.File) => file.fieldname === 'demo',
-    );
-    const posterFile = files.find(
-      (file: Express.Multer.File) => file.fieldname === 'poster',
-    );
-    const screenFiles = files.filter(
-      (file: Express.Multer.File) => file.fieldname === 'screens',
-    );
+  ): Promise<any> {
+    const grouped = groupBy(files, (file) => file.fieldname);
 
-    const demo = await this.uploadMedia(demoFile);
-    const poster = await this.uploadMedia(posterFile);
-    const screens = await this.uploadMultipleMedia(screenFiles);
+    const demo = await this.uploadMedia(grouped.get('demo').at(0));
+    const poster = await this.uploadMedia(grouped.get('poster').at(0));
+    const screens = await this.uploadMultipleMedia(grouped.get('screens'));
 
     const createProject = new this.projectModel({
       ...project,
