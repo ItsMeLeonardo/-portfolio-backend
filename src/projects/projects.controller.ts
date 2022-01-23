@@ -18,31 +18,15 @@ import { Project } from './schemas/project.schema';
 export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
 
+  // FIXME: change this to service
   @Post('/create')
   @UseInterceptors(AnyFilesInterceptor())
   async create(
     @Body(ParseProjectPipe, new JoiValidationPipe(createProjectSchema))
-    projectData: any,
-    @UploadedFiles() files,
+    project: any,
+    @UploadedFiles() files: Express.Multer.File[],
   ): Promise<any> {
-    const demoFile = files.find((file) => file.fieldname === 'demo');
-    const posterFile = files.find((file) => file.fieldname === 'poster');
-    const screenFiles = files.filter((file) => file.fieldname === 'screens');
-
-    const demoUrl = await this.projectsService.uploadMedia(demoFile);
-    const posterUrl = await this.projectsService.uploadMedia(posterFile);
-    const screenUrls = await this.projectsService.uploadMultipleMedia(
-      screenFiles,
-    );
-
-    const project = {
-      ...projectData,
-      poster: posterUrl,
-      demo: demoUrl,
-      screens: screenUrls,
-    };
-
-    return this.projectsService.createProject(project);
+    return this.projectsService.createProject(project, files);
   }
 
   @Get()

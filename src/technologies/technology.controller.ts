@@ -7,14 +7,12 @@ import {
   Put,
   UploadedFiles,
   UseInterceptors,
-  UsePipes,
 } from '@nestjs/common';
 
 import { JoiValidationPipe } from 'src/pipes/joivalidation.pipe';
 import { TechnologyService } from './technology.service';
 import { createTechSchema } from './dto/create-tech.dto';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
-import { InjectConnection } from '@nestjs/mongoose';
 
 @Controller('tech')
 export class TechnologyController {

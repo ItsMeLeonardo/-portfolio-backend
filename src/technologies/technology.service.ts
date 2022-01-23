@@ -18,12 +18,15 @@ export class TechnologyService {
     technologyData: Technology,
     icon: Express.Multer.File,
   ): Promise<TechnologyDocument> {
-    const [url, error] = await this.cloudStorage.uploadImage(icon);
+    const [mediaData, error] = await this.cloudStorage.uploadImage(icon);
     if (error) {
       throw new BadRequestException(`${error} cannot upload the icon`);
     }
 
-    return await this.techModel.create({ ...technologyData, icon: url });
+    return await this.techModel.create({
+      ...technologyData,
+      icon: mediaData,
+    });
   }
 
   async getAll() {

@@ -1,10 +1,15 @@
 import * as mongoose from 'mongoose';
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, raw, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
 import { Technology } from '../../technologies/schemas/technology.schema';
 
 const OBJECT_ID = mongoose.Schema.Types.ObjectId;
+
+const mediaType = {
+  url: { type: String, required: true },
+  name: { type: String, required: true },
+};
 
 @Schema()
 export class Project {
@@ -28,14 +33,14 @@ export class Project {
   })
   technologies: Technology[];
 
-  @Prop({ required: true })
-  poster: string;
+  @Prop(raw(mediaType))
+  poster: any;
 
-  @Prop()
-  demo: string;
+  @Prop(raw(mediaType))
+  demo: any;
 
-  @Prop({ required: true })
-  screens: string[];
+  @Prop(raw([mediaType]))
+  screens: Array<any>;
 }
 
 export type ProjectDocument = Project & Document;

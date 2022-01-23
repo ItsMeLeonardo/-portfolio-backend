@@ -1,13 +1,20 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Prop, raw, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document, ObjectId, Types } from 'mongoose';
+
+const OBJECT_ID = Types.ObjectId;
+
+const iconType = {
+  url: { type: String, required: true },
+  name: { type: String, required: true },
+};
 
 @Schema()
 export class Technology {
   @Prop({ required: true })
   name: string;
 
-  @Prop({ required: true })
-  icon: string;
+  @Prop(raw(iconType))
+  icon: any;
 
   @Prop({ required: true })
   webpage: string;
