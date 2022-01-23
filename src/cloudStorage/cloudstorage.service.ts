@@ -48,4 +48,30 @@ export class CloudStorageService {
       return [null, err.message];
     }
   }
+
+  /**
+   * @description this method is used to delete a media of cloudinary
+   * @param mediaId the name or id of file
+   * @returns {Promise<[string, string]>} an array with any of these combinations `[{result}, null]` or `[null, error]`
+   */
+  async deleteMedia(mediaId: string): Promise<[string, string]> {
+    try {
+      const result = await cloudinary.uploader.destroy(mediaId);
+      return [result, null];
+    } catch (err) {
+      return [null, err.message];
+    }
+  }
+
+  async updateMedia(
+    mediaId: string,
+    file: Express.Multer.File,
+  ): Promise<[mediaType, string]> {
+    const [, error] = await this.deleteMedia(mediaId);
+    if (error) {
+      return [null, error];
+    }
+
+    return await this.uploadImage(file);
+  }
 }

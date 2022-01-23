@@ -18,7 +18,6 @@ import { Project } from './schemas/project.schema';
 export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
 
-  // FIXME: change this to service
   @Post('/create')
   @UseInterceptors(AnyFilesInterceptor())
   async create(

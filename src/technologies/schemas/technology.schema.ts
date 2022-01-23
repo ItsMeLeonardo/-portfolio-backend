@@ -1,7 +1,5 @@
 import { Prop, raw, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, ObjectId, Types } from 'mongoose';
-
-const OBJECT_ID = Types.ObjectId;
+import { Document } from 'mongoose';
 
 const iconType = {
   url: { type: String, required: true },
