@@ -40,8 +40,13 @@ export class TechnologyController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string) {
-    return null;
+  @UseInterceptors(AnyFilesInterceptor())
+  update(
+    @Param('id') id: string,
+    @Body() technology: any,
+    @UploadedFiles() icon: Express.Multer.File[],
+  ) {
+    return this.technologyService.update(id, technology, icon.at(0));
   }
 
   @Delete(':id')

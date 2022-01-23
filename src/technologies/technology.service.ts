@@ -15,7 +15,7 @@ export class TechnologyService {
   ) {}
 
   async create(
-    technologyData: Technology,
+    technology: Technology,
     icon: Express.Multer.File,
   ): Promise<TechnologyDocument> {
     const [mediaData, error] = await this.cloudStorage.uploadImage(icon);
@@ -24,7 +24,7 @@ export class TechnologyService {
     }
 
     return await this.techModel.create({
-      ...technologyData,
+      ...technology,
       icon: mediaData,
     });
   }
@@ -38,6 +38,28 @@ export class TechnologyService {
     const grouped = groupBy(technologies, (tech) => tech.expertise);
     const groupedByExpertise = fromMapToObject(grouped);
     return groupedByExpertise;
+  }
+
+  async update(id: string, technology: any, icon?: Express.Multer.File) {
+    try {
+      if (icon) {
+        const [mediaData, error] = await this.cloudStorage.uploadImage(icon);
+        if (error) {
+          throw new BadRequestException(`${error} cannot upload the icon`);
+        }
+        technology.icon = mediaData;
+      }
+
+      const updated = await this.techModel.findByIdAndUpdate(
+        id,
+        { ...technology },
+        { new: true },
+      );
+
+      return updated;
+    } catch (err) {
+      throw new BadRequestException(err.message);
+    }
   }
 
   async delete(id: string) {
