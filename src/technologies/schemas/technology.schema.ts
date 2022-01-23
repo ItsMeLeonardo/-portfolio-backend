@@ -11,6 +11,9 @@ export class Technology {
 
   @Prop({ required: true })
   webpage: string;
+
+  @Prop({ required: true })
+  expertise: string;
 }
 
 export type TechnologyDocument = Technology & Document;

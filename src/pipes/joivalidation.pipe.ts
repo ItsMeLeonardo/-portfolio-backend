@@ -10,7 +10,7 @@ export class JoiValidationPipe implements PipeTransform {
     if (error) {
       console.log({ error, value });
 
-      throw new BadRequestException('the project is not correct ');
+      throw new BadRequestException(error.message);
     }
 
     return value;

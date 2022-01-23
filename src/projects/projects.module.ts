@@ -1,9 +1,10 @@
+import { MongooseModule } from '@nestjs/mongoose';
+import { Module } from '@nestjs/common';
+
+import { CloudstorageModule } from 'src/cloudStorage/cloudstorage.module';
+import { Project, ProjectSchema } from './schemas/project.schema';
 import { ProjectsController } from './projects.controller';
 import { ProjectsService } from './projects.service';
-import { Module } from '@nestjs/common';
-import { Project, ProjectSchema } from './schemas/project.schema';
-import { MongooseModule } from '@nestjs/mongoose';
-import { CloudstorageModule } from 'src/cloudStorage/cloudstorage.module';
 
 const schemaConfig = () => {
   const schema = ProjectSchema;
