@@ -14,6 +14,7 @@ import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { JoiValidationPipe } from '../pipes/joivalidation.pipe';
 import { ParseProjectPipe } from '../pipes/parseproject.pipe';
 import { createProjectSchema } from './dto/create-project.dto';
+import { ProjectByIdPipe } from './pipes/projectbyid.pipe';
 import { ProjectsService } from './projects.service';
 import { Project } from './schemas/project.schema';
 
@@ -39,11 +40,11 @@ export class ProjectsController {
   @Put(':id')
   @UseInterceptors(AnyFilesInterceptor())
   async update(
-    @Param('id') id: string,
+    @Param('id', ProjectByIdPipe) projectToUpdate: any,
     @Body(ParseProjectPipe) project: any,
     @UploadedFiles() files: Express.Multer.File[],
   ) {
-    return this.projectsService.updateProject(id, project, files);
+    return this.projectsService.updateProject(projectToUpdate, project, files);
   }
 
   @Delete(':id')

@@ -40,11 +40,8 @@ export class TechnologyService {
     return groupedByExpertise;
   }
 
-  async update(id: string, technology: any, icon?: Express.Multer.File) {
+  async update(tech: any, technology: any, icon?: Express.Multer.File) {
     try {
-      // FIXME: this convert this in a pipe
-      const tech = await this.techModel.findById(id);
-      if (!tech) throw new BadRequestException('Technology not found');
       if (icon) {
         const [mediaData, error] = await this.cloudStorage.updateMedia(
           tech.icon.name,
@@ -57,7 +54,7 @@ export class TechnologyService {
       }
 
       const updated = await this.techModel.findByIdAndUpdate(
-        id,
+        tech.id,
         { ...technology },
         { new: true },
       );

@@ -53,16 +53,6 @@ export class ProjectsService {
     return result;
   }
 
-  private async updateMultipleMedia(
-    medias: mediaType[],
-    files: Express.Multer.File[],
-  ) {
-    const promises = medias.map((media, index) =>
-      this.updateMedia(media, files.at(index)),
-    );
-    return await Promise.all(promises);
-  }
-
   async createProject(
     project: Project,
     files: Express.Multer.File[],
@@ -86,12 +76,12 @@ export class ProjectsService {
     return await this.projectModel.find().exec();
   }
 
-  async updateProject(id: string, project: any, files?: Express.Multer.File[]) {
+  async updateProject(
+    projectToUpdate: any,
+    project: any,
+    files?: Express.Multer.File[],
+  ) {
     try {
-      // FIXME: this convert this in a pipe
-      const projectToUpdate = await this.projectModel.findById(id);
-      if (!projectToUpdate) throw new BadRequestException('Project not found');
-
       if (files) {
         const grouped = groupBy(files, (file) => file.fieldname);
 
@@ -125,7 +115,7 @@ export class ProjectsService {
       }
 
       const updated = this.projectModel.findByIdAndUpdate(
-        id,
+        projectToUpdate.id,
         { ...project },
         { new: true },
       );

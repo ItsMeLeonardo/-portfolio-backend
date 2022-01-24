@@ -14,6 +14,7 @@ import { JoiValidationPipe } from 'src/pipes/joivalidation.pipe';
 import { TechnologyService } from './technology.service';
 import { createTechSchema } from './dto/create-tech.dto';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
+import { TechnologyByIdPipe } from './pipes/technologybyid.pipe';
 
 @Controller('tech')
 export class TechnologyController {
@@ -42,11 +43,11 @@ export class TechnologyController {
   @Put(':id')
   @UseInterceptors(AnyFilesInterceptor())
   update(
-    @Param('id') id: string,
+    @Param('id', TechnologyByIdPipe) tech: any,
     @Body() technology: any,
     @UploadedFiles() icon: Express.Multer.File[],
   ) {
-    return this.technologyService.update(id, technology, icon.at(0));
+    return this.technologyService.update(tech, technology, icon.at(0));
   }
 
   @Delete(':id')
