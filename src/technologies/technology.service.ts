@@ -42,8 +42,14 @@ export class TechnologyService {
 
   async update(id: string, technology: any, icon?: Express.Multer.File) {
     try {
+      // FIXME: this convert this in a pipe
+      const tech = await this.techModel.findById(id);
+      if (!tech) throw new BadRequestException('Technology not found');
       if (icon) {
-        const [mediaData, error] = await this.cloudStorage.uploadImage(icon);
+        const [mediaData, error] = await this.cloudStorage.updateMedia(
+          tech.icon.name,
+          icon,
+        );
         if (error) {
           throw new BadRequestException(`${error} cannot upload the icon`);
         }

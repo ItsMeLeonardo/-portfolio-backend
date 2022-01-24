@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Put,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
@@ -26,13 +27,23 @@ export class ProjectsController {
     @Body(ParseProjectPipe, new JoiValidationPipe(createProjectSchema))
     project: any,
     @UploadedFiles() files: Express.Multer.File[],
-  ): Promise<any> {
+  ): Promise<Project> {
     return this.projectsService.createProject(project, files);
   }
 
   @Get()
   async findAll(): Promise<Project[]> {
     return this.projectsService.getProjects();
+  }
+
+  @Put(':id')
+  @UseInterceptors(AnyFilesInterceptor())
+  async update(
+    @Param('id') id: string,
+    @Body(ParseProjectPipe) project: any,
+    @UploadedFiles() files: Express.Multer.File[],
+  ) {
+    return this.projectsService.updateProject(id, project, files);
   }
 
   @Delete(':id')

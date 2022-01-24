@@ -5,7 +5,7 @@ export class ParseProjectPipe implements PipeTransform {
   transform(value: any) {
     const { technologies, softSkills } = value;
     if (!(technologies || softSkills)) {
-      throw new BadRequestException('the project has some fields missing');
+      return { ...value };
     }
 
     const val = {

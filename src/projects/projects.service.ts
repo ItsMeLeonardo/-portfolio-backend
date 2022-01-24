@@ -42,6 +42,27 @@ export class ProjectsService {
     return await Promise.all(promises);
   }
 
+  private async updateMedia(media: mediaType, file: Express.Multer.File) {
+    const [result, error] = await this.cloudStorage.updateMedia(
+      media.name,
+      file,
+    );
+    if (error) {
+      throw new BadRequestException(error);
+    }
+    return result;
+  }
+
+  private async updateMultipleMedia(
+    medias: mediaType[],
+    files: Express.Multer.File[],
+  ) {
+    const promises = medias.map((media, index) =>
+      this.updateMedia(media, files.at(index)),
+    );
+    return await Promise.all(promises);
+  }
+
   async createProject(
     project: Project,
     files: Express.Multer.File[],
@@ -63,6 +84,56 @@ export class ProjectsService {
 
   async getProjects(): Promise<ProjectDocument[]> {
     return await this.projectModel.find().exec();
+  }
+
+  async updateProject(id: string, project: any, files?: Express.Multer.File[]) {
+    try {
+      // FIXME: this convert this in a pipe
+      const projectToUpdate = await this.projectModel.findById(id);
+      if (!projectToUpdate) throw new BadRequestException('Project not found');
+
+      if (files) {
+        const grouped = groupBy(files, (file) => file.fieldname);
+
+        if (grouped.has('demo')) {
+          const demo = await this.updateMedia(
+            projectToUpdate.demo,
+            grouped.get('demo').at(0),
+          );
+          project.demo = demo;
+        }
+        if (grouped.has('poster')) {
+          const poster = await this.updateMedia(
+            projectToUpdate.poster,
+            grouped.get('poster').at(0),
+          );
+          project.poster = poster;
+        }
+        if (grouped.has('screens')) {
+          const screensToProject = projectToUpdate.screens;
+          const screensGrouped = grouped.get('screens');
+          const screens = [...screensToProject];
+          for (let index = 0; index < screensGrouped.length; index++) {
+            const screen = await this.updateMedia(
+              screensToProject.at(index),
+              screensGrouped.at(index),
+            );
+            screens[index] = screen;
+          }
+          project.screens = screens;
+        }
+      }
+
+      const updated = this.projectModel.findByIdAndUpdate(
+        id,
+        { ...project },
+        { new: true },
+      );
+      return updated;
+    } catch (error) {
+      console.log({ error });
+      throw new BadRequestException(error);
+    }
   }
 
   async deleteProject(id: string) {
