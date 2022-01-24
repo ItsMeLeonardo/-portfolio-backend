@@ -73,7 +73,7 @@ export class ProjectsService {
   }
 
   async getProjects(): Promise<ProjectDocument[]> {
-    return await this.projectModel.find().exec();
+    return await this.projectModel.find().populate('technologies').exec();
   }
 
   async updateProject(

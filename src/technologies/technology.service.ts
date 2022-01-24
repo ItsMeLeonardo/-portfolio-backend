@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import { Technology, TechnologyDocument } from './schemas/technology.schema';
 import { CloudStorageService } from '../cloudStorage/cloudstorage.service';
 import { fromMapToObject } from '../utils/fromMapToObject';
+import { validateExpertise } from './enums/expertise.enum';
 import { groupBy } from '../utils/groupBy';
 
 @Injectable()
@@ -18,6 +19,7 @@ export class TechnologyService {
     technology: Technology,
     icon: Express.Multer.File,
   ): Promise<TechnologyDocument> {
+    validateExpertise(technology.expertise);
     const [mediaData, error] = await this.cloudStorage.uploadImage(icon);
     if (error) {
       throw new BadRequestException(`${error} cannot upload the icon`);
@@ -41,6 +43,9 @@ export class TechnologyService {
   }
 
   async update(tech: any, technology: any, icon?: Express.Multer.File) {
+    const { expertise } = technology;
+    if (expertise) validateExpertise(expertise);
+
     try {
       if (icon) {
         const [mediaData, error] = await this.cloudStorage.updateMedia(
