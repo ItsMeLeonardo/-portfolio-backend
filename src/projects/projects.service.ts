@@ -59,8 +59,8 @@ export class ProjectsService {
   ): Promise<any> {
     const grouped = groupBy(files, (file) => file.fieldname);
 
-    const demo = await this.uploadMedia(grouped.get('demo').at(0));
-    const poster = await this.uploadMedia(grouped.get('poster').at(0));
+    const demo = await this.uploadMedia(grouped.get('demo')[0]);
+    const poster = await this.uploadMedia(grouped.get('poster')[0]);
     const screens = await this.uploadMultipleMedia(grouped.get('screens'));
 
     const createProject = new this.projectModel({
@@ -88,14 +88,14 @@ export class ProjectsService {
         if (grouped.has('demo')) {
           const demo = await this.updateMedia(
             projectToUpdate.demo,
-            grouped.get('demo').at(0),
+            grouped.get('demo')[0],
           );
           project.demo = demo;
         }
         if (grouped.has('poster')) {
           const poster = await this.updateMedia(
             projectToUpdate.poster,
-            grouped.get('poster').at(0),
+            grouped.get('poster')[0],
           );
           project.poster = poster;
         }
@@ -105,8 +105,8 @@ export class ProjectsService {
           const screens = [...screensToProject];
           for (let index = 0; index < screensGrouped.length; index++) {
             const screen = await this.updateMedia(
-              screensToProject.at(index),
-              screensGrouped.at(index),
+              screensToProject[index],
+              screensGrouped[index],
             );
             screens[index] = screen;
           }

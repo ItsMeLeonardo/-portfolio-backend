@@ -37,7 +37,7 @@ export class TechnologyController {
     @Body(new JoiValidationPipe(createTechSchema)) technology,
     @UploadedFiles() icon: Express.Multer.File[],
   ) {
-    return this.technologyService.create(technology, icon.at(0));
+    return this.technologyService.create(technology, icon[0]);
   }
 
   @Put(':id')
@@ -47,7 +47,7 @@ export class TechnologyController {
     @Body() technology: any,
     @UploadedFiles() icon: Express.Multer.File[],
   ) {
-    return this.technologyService.update(tech, technology, icon.at(0));
+    return this.technologyService.update(tech, technology, icon[0]);
   }
 
   @Delete(':id')
