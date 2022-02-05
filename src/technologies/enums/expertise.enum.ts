@@ -1,14 +1,14 @@
 import { BadRequestException } from '@nestjs/common';
 
 const Expertise = {
-  COMING_SOON: 'coming-soon',
+  COMING_SOON: 'comingSoon',
   ADVANCED: 'advanced',
   MEDIUM: 'medium',
   OTHER: 'other',
 };
 
 export enum ExpertiseEnum {
-  COMING_SOON = 'coming-soon',
+  COMING_SOON = 'comingSoon',
   ADVANCED = 'advanced',
   MEDIUM = 'medium',
   OTHER = 'other',
