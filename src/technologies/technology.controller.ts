@@ -25,10 +25,15 @@ export class TechnologyController {
     const all = await this.technologyService.getAll();
     return { all };
   }
-
   @Get('grouped')
   async getAllGroupByExpertise() {
     return this.technologyService.getAllGroupByExpertise();
+  }
+
+  /* ========== endpoints only for tool ui ========== */
+  @Get('/tool')
+  async getAllForToolUi() {
+    return await this.technologyService.getAllForToolUi();
   }
 
   @Post()

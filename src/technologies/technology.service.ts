@@ -15,6 +15,22 @@ export class TechnologyService {
     private cloudStorage: CloudStorageService,
   ) {}
 
+  async getAll() {
+    return await this.techModel.find();
+  }
+
+  async getAllGroupByExpertise() {
+    const technologies = await this.techModel.find();
+    const grouped = groupBy(technologies, (tech) => tech.expertise);
+    const groupedByExpertise = fromMapToObject(grouped);
+    return groupedByExpertise;
+  }
+
+  /* ========== endpoints only for tool ui ========== */
+  async getAllForToolUi() {
+    return await this.techModel.find().select({ id: 1, name: 1 });
+  }
+
   async create(
     technology: Technology,
     icon: Express.Multer.File,
@@ -29,17 +45,6 @@ export class TechnologyService {
       ...technology,
       icon: mediaData,
     });
-  }
-
-  async getAll() {
-    return await this.techModel.find();
-  }
-
-  async getAllGroupByExpertise() {
-    const technologies = await this.techModel.find();
-    const grouped = groupBy(technologies, (tech) => tech.expertise);
-    const groupedByExpertise = fromMapToObject(grouped);
-    return groupedByExpertise;
   }
 
   async update(tech: any, technology: any, icon?: Express.Multer.File) {

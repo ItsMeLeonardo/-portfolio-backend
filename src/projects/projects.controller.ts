@@ -22,6 +22,16 @@ import { Project } from './schemas/project.schema';
 export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
 
+  @Get()
+  async findAll(): Promise<Project[]> {
+    return this.projectsService.getProjects();
+  }
+  /* ========== endpoints only for tool ui ========== */
+  @Get('/tool')
+  async findAllForToolUi() {
+    return await this.projectsService.findAllForToolUi();
+  }
+
   @Post('/create')
   @UseInterceptors(AnyFilesInterceptor())
   async create(
@@ -30,11 +40,6 @@ export class ProjectsController {
     @UploadedFiles() files: Express.Multer.File[],
   ): Promise<Project> {
     return this.projectsService.createProject(project, files);
-  }
-
-  @Get()
-  async findAll(): Promise<Project[]> {
-    return this.projectsService.getProjects();
   }
 
   @Put(':id')

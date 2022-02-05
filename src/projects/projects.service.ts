@@ -14,6 +14,17 @@ export class ProjectsService {
     private cloudStorage: CloudStorageService,
   ) {}
 
+  async getProjects(): Promise<ProjectDocument[]> {
+    return await this.projectModel.find().populate('technologies').exec();
+  }
+
+  /* ========== endpoints only for tool ui ========== */
+  async findAllForToolUi() {
+    return await this.projectModel
+      .find()
+      .select({ id: 1, title: 1, poster: 1 });
+  }
+
   private async uploadMedia(file: Express.Multer.File): Promise<mediaType> {
     const [mediaData, error] = await this.cloudStorage.uploadImage(file);
     if (error) {
@@ -70,10 +81,6 @@ export class ProjectsService {
       screens,
     });
     return await createProject.save();
-  }
-
-  async getProjects(): Promise<ProjectDocument[]> {
-    return await this.projectModel.find().populate('technologies').exec();
   }
 
   async updateProject(
