@@ -126,7 +126,7 @@ export class ProjectsService {
         { ...project },
         { new: true },
       );
-      return updated;
+      return updated.select({ id: 1, title: 1, poster: 1 });
     } catch (error) {
       console.log({ error });
       throw new BadRequestException(error);

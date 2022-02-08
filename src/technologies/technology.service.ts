@@ -63,11 +63,9 @@ export class TechnologyService {
         technology.icon = mediaData;
       }
 
-      const updated = await this.techModel.findByIdAndUpdate(
-        tech.id,
-        { ...technology },
-        { new: true },
-      );
+      const updated = await this.techModel
+        .findByIdAndUpdate(tech.id, { ...technology }, { new: true })
+        .select({ id: 1, name: 1 });
 
       return updated;
     } catch (err) {
