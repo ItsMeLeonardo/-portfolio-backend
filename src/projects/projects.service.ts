@@ -26,7 +26,13 @@ export class ProjectsService {
   }
 
   private async uploadMedia(file: Express.Multer.File): Promise<mediaType> {
-    const [mediaData, error] = await this.cloudStorage.uploadImage(file);
+    let mediaData: mediaType;
+    let error: string;
+    if (file.mimetype.includes('image')) {
+      [mediaData, error] = await this.cloudStorage.uploadImage(file);
+    } else {
+      [mediaData, error] = await this.cloudStorage.uploadVideo(file);
+    }
     if (error) {
       throw new BadRequestException(error);
     }

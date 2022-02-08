@@ -2,6 +2,7 @@ import {
   v2 as cloudinary,
   UploadApiResponse,
   UploadApiErrorResponse,
+  UploadApiOptions,
 } from 'cloudinary';
 import { Injectable } from '@nestjs/common';
 
@@ -14,9 +15,9 @@ export type mediaType = {
 export class CloudStorageService {
   private uploadStream(
     buffer: Buffer,
+    config: UploadApiOptions,
   ): Promise<UploadApiResponse | UploadApiErrorResponse> {
     return new Promise((resolve, reject) => {
-      const config = { folder: process.env.CLOUDINARY_FOLDER };
       const cloudinaryDone = (error, result) => {
         return error ? reject(error) : resolve(result);
       };
@@ -30,6 +31,7 @@ export class CloudStorageService {
     const fileName = `${name}.${format}`;
     return `${baseUrl}f_auto/${versionFormat}${fileName}`;
   }
+
   /**
    * @description this method is used to upload an image to cloudinary
    * @param file
@@ -37,12 +39,34 @@ export class CloudStorageService {
    */
   async uploadImage(file: Express.Multer.File): Promise<[mediaType, string]> {
     try {
+      const imageOptions = { folder: process.env.CLOUDINARY_FOLDER };
       const {
         public_id: name,
         version,
         format,
-      } = await this.uploadStream(file.buffer).catch();
+      } = await this.uploadStream(file.buffer, imageOptions).catch();
       const url = this.createUrl({ name, version, format });
+      return [{ url, name }, null];
+    } catch (err) {
+      return [null, err.message];
+    }
+  }
+
+  /**
+   * @description this method is used to upload a video to cloudinary
+   * @param file
+   * @returns {Promise<[mediaType, string]>} an array with any of these combinations `[{data}, null]` or `[null, error]`
+   */
+  async uploadVideo(file: Express.Multer.File): Promise<[mediaType, string]> {
+    try {
+      const videoOptions = {
+        folder: process.env.CLOUDINARY_FOLDER,
+        resource_type: 'video',
+      };
+      const { public_id: name, url } = await this.uploadStream(
+        file.buffer,
+        videoOptions,
+      ).catch();
       return [{ url, name }, null];
     } catch (err) {
       return [null, err.message];
